@@ -35,6 +35,11 @@ io.on('connection', function (socket) {
   	socket.broadcast.emit("newrpm",data);
   });
 
+  socket.on('newControl',function(data){
+    console.log("New Control Parameters Recieved ",data);
+    socket.broadcast.emit("control",data);
+  })
+
 
 
 });
