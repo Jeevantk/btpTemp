@@ -114,7 +114,7 @@ io.on('connection', function (socket) {
         if(err) throw err;
         console.log("State Updated");
       });
-    }
+    });
     
   })
 
