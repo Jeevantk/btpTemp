@@ -109,9 +109,9 @@ io.on('connection', function (socket) {
     socket.broadcast.emit("control",data);
     connection.query("SELECT * FROM currentPosition WHERE id = 1",function(err,result,fields){
       if(err) throw err;
-      var xValue=data.xValue+result[0].xValue;
-      var yValue=data.yValue+result[0].yValue;
-      var zValue=data.zValue+result[0].zValue;
+      var xValue=parseInt(data.xValue)+parseInt(result[0].xValue);
+      var yValue=parseInt(data.yValue)+parseInt(result[0].yValue);
+      var zValue=parseInt(data.zValue)+parseInt(result[0].zValue);
       var queryString="UPDATE `currentPosition` SET `xValue`="+xValue+", `yValue`="+(yValue)+", `zValue`="+(zValue)+" WHERE `id`=1;";
             connection.query(queryString,function(err,result){
         if(err) throw err;
