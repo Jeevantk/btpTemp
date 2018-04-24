@@ -104,6 +104,11 @@ io.on('connection', function (socket) {
   	socket.broadcast.emit("newrpm",data);
   });
 
+  socket.on('new Vibration',function(data){
+    console.log("New Vibration Value Recieved ",data);
+    socket.broadcast.emit("newVib",data);
+  })
+
   socket.on('newControl',function(data){
     console.log("New Control Parameters Recieved ",data);
     socket.broadcast.emit("control",data);
@@ -116,8 +121,11 @@ io.on('connection', function (socket) {
             connection.query(queryString,function(err,result){
         if(err) throw err;
         console.log("State Updated");
+        socket.emit.broadcast("messageSuccess","Success");
       });
     });
+
+
     
   })
 

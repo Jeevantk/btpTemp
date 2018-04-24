@@ -2,4 +2,4 @@ CREATE TABLE IF NOT EXISTS `currentPosition`(`id` int(11) NOT NULL ,`xValue` rea
 
 INSERT INTO currentPosition(id,xValue,yValue,zValue) VALUES (1,0.0,0.0,0.0);
 
-UPDATE `currentPosition` SET `xValue`=0, `yValue`=0, `zValue`=0 WHERE `id`=1
+UPDATE `currentPosition` SET `xValue`=0, `yValue`=0, `zValue`=0 WHERE `id`=1;
