@@ -122,7 +122,7 @@ io.on('connection', function (socket) {
         if(err) throw err;
         console.log("State Updated");
         console.log("Trying to send data");
-        socket.broadcast.emit('reloadFlag',data);
+        socket.emit('reloadFlag',data);
       });
     });
 
