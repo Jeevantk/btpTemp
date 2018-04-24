@@ -118,9 +118,10 @@ io.on('connection', function (socket) {
       var yValue=parseInt(data.yValue)+parseInt(result[0].yValue);
       var zValue=parseInt(data.zValue)+parseInt(result[0].zValue);
       var queryString="UPDATE `currentPosition` SET `xValue`="+xValue+", `yValue`="+(yValue)+", `zValue`="+(zValue)+" WHERE `id`=1;";
-            connection.query(queryString,function(err,result){
+      connection.query(queryString,function(err,result){
         if(err) throw err;
         console.log("State Updated");
+        console.log("Trying to send data");
         socket.broadcast.emit('reloadFlag',data);
       });
     });
