@@ -12,8 +12,15 @@ socket.on('connect',function(){
 });
 
 socket.on('control',function(data) {
-      console.log('Received Control Message Recieved from the server! ',data);
-      spawn('python',["control.py",data.xValue,data.yValue,data.zValue,data.feedRate]);
+
+    console.log('Received Control Message Recieved from the server! ',data);
+    var xMotion=Math.min(data.xValue,30);
+    var yMotion=Math.min(data.yValue,60);
+    var zMotion=Math.min(data.zValue,30);
+    var feedRate=Math.min(data.feedRate,300);
+    spawn('python',["control.py",xMotion,yMotion,zMotion,feedRate]);
+
+    // spawn('python',["control.py",data.xValue,data.yValue,data.zValue,data.feedRate]);
       // console.log(data.xValue);
 });
 
