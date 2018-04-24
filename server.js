@@ -121,7 +121,7 @@ io.on('connection', function (socket) {
             connection.query(queryString,function(err,result){
         if(err) throw err;
         console.log("State Updated");
-        socket.broadcast.emit('messageSuccess',"Success");
+        socket.broadcast.emit('reloadFlag',data);
       });
     });
 
