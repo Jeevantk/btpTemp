@@ -23,7 +23,7 @@ connection.connect((err)=>{
 
 var createTemp = "CREATE TABLE IF NOT EXISTS `tempurature`(`id` int(11) NOT NULL AUTO_INCREMENT,`tempValue` real  NOT NULL,PRIMARY KEY (`id`));";
 
-var myPort = new SerialPort('/dev/ttyACM0', {
+var myPort = new SerialPort('/dev/ttyACM1', {
     parser: new SerialPort.parsers.Readline('\n')
 },false);
 

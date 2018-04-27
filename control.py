@@ -24,7 +24,7 @@ if(len(sys.argv)>4):
 
 
 
-control = "G91 G01 x"+str(xMove)+" Y"+str(yMove)+" Z"+str(zMove)+" F70"
+control = "G91 G01 x"+str(xMove)+" Y"+str(yMove)+" Z"+str(zMove)+" F"+str(feedRate)
 
 print(control)
 if ok_for_mdi():
