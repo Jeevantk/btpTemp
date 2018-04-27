@@ -93,6 +93,11 @@ io.on('connection', function (socket) {
     socket.broadcast.emit('newTemp', data);
   });
 
+  socket.on('collectData',function(data){
+    console.log('Command Recieved for Collect Data ',data);
+    socket.broadcast.emit('startStop',data);
+  });
+
 
   socket.on('new Current',function(data){
   	console.log("New Current Value Recieved ",data);

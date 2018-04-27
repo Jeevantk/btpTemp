@@ -1,14 +1,43 @@
 var SerialPort = require("serialport");
+var mysql = require('mysql');
 var socket = require('socket.io-client')('http://34.212.83.92:6001');
 
 // var socket = require('socket.io-client')('http://127.0.0.1:6001');
 
 var spawn = require("child_process").spawn;
 
+// var socket = require('socket.io-client')('http://localhost:6001');
+
+const connection = mysql.createConnection({
+	host: 'localhost',
+	user: 'root',
+	password : 'theeta',
+	database : 'btp'
+});
+
+connection.connect((err)=>{
+	if(err) throw err;
+	console.log('Connected to MYSQL Database');
+});
+
+
+var createTemp = "CREATE TABLE IF NOT EXISTS `tempurature`(`id` int(11) NOT NULL AUTO_INCREMENT,`tempValue` real  NOT NULL,PRIMARY KEY (`id`));";
+
+var myPort = new SerialPort('/dev/ttyACM0', {
+    parser: new SerialPort.parsers.Readline('\n')
+},false);
 
 
 socket.on('connect',function(){
 	console.log("Local Machine is connected to the server");
+});
+
+
+connection.query(createTemp, function(err,results,fields){
+  if(err)
+  {
+  	console.log(err.message);
+  }
 });
 
 socket.on('control',function(data) {
@@ -24,10 +53,50 @@ socket.on('control',function(data) {
       // console.log(data.xValue);
 });
 
+socket.on('startStop',function(data){
+	if(data==1)
+	{
+		port.write(1, function(err) {
+		  if (err) {
+		    return console.log('Error on Starting ', err.message);
+		  }
+		  console.log('Data Colelction Started');
+		});
+	}
+	else if(data==0)
+	{
+		port.write(2, function(err) {
+		  if (err) {
+		    return console.log('Error on Stoping ', err.message);
+		  }
+		  console.log('Data Colelction Stopped');
+		});
+	}
 
-// socket.on('newComand', function (data) {
-// 	// Check if a new command has been excecuted
+});
 
-// 	console.log("New tempurature Recieved ",data);
-// 	socket.broadcast.emit('newTemp', data);
-// });
+var currentString="";
+myPort.on('open', function(){
+	// console.log('Serial Port Opened');
+	myPort.on('data', function(data){
+		// currentValue=data.toString('utf8');
+		currentValue=data.toString();
+		// console.log(currentString);
+		if(currentValue.includes("\n")){
+			currentString=currentString+currentValue;
+			currentString=currentString.replace("\n",'');
+			// console.log(parseFloat(currentString));
+			socket.emit('new tempurature', parseFloat(currentString));
+			console.log("New Tempurature Sent from Client Side",parseFloat(currentString));
+			connection.query('INSERT INTO tempurature (tempValue) VALUES (?)',parseFloat(currentString),function(err,result){
+				if(err) throw err;
+				console.log("Inserted tempurature into database ",parseFloat(currentString));
+			});
+			currentString="";
+		}
+		else{
+			currentString=currentString+currentValue;
+		}
+	});
+});
+
