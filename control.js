@@ -52,25 +52,16 @@ socket.on('control',function(data) {
     // spawn('python',["control.py",data.xValue,data.yValue,data.zValue,data.feedRate]);
       // console.log(data.xValue);
 });
+var write=0;
 
 socket.on('startStop',function(data){
 	if(data==1)
 	{
-		port.write(1, function(err) {
-		  if (err) {
-		    return console.log('Error on Starting ', err.message);
-		  }
-		  console.log('Data Colelction Started');
-		});
+		write=1;
 	}
 	else if(data==0)
 	{
-		port.write(2, function(err) {
-		  if (err) {
-		    return console.log('Error on Stoping ', err.message);
-		  }
-		  console.log('Data Colelction Stopped');
-		});
+		write=0;
 	}
 
 });
@@ -80,23 +71,26 @@ myPort.on('open', function(){
 	// console.log('Serial Port Opened');
 	myPort.on('data', function(data){
 		// currentValue=data.toString('utf8');
-		currentValue=data.toString();
-		// console.log(currentString);
-		if(currentValue.includes("\n")){
-			currentString=currentString+currentValue;
-			currentString=currentString.replace("\n",'');
-			// console.log(parseFloat(currentString));
-			socket.emit('new tempurature', parseFloat(currentString));
-			console.log("New Tempurature Sent from Client Side",parseFloat(currentString));
-			connection.query('INSERT INTO tempurature (tempValue) VALUES (?)',parseFloat(currentString),function(err,result){
-				if(err) throw err;
-				console.log("Inserted tempurature into database ",parseFloat(currentString));
-			});
-			currentString="";
+		if(write){
+			currentValue=data.toString();
+			// console.log(currentString);
+			if(currentValue.includes("\n")){
+				currentString=currentString+currentValue;
+				currentString=currentString.replace("\n",'');
+				// console.log(parseFloat(currentString));
+				socket.emit('new tempurature', parseFloat(currentString));
+				console.log("New Tempurature Sent from Client Side",parseFloat(currentString));
+				connection.query('INSERT INTO tempurature (tempValue) VALUES (?)',parseFloat(currentString),function(err,result){
+					if(err) throw err;
+					console.log("Inserted tempurature into database ");
+				});
+				currentString="";
+			}
+			else{
+				currentString=currentString+currentValue;
+			}
 		}
-		else{
-			currentString=currentString+currentValue;
-		}
+
 	});
 });
 

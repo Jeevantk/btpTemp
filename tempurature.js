@@ -31,8 +31,17 @@ connection.query(createTemp, function(err,results,fields){
 
 
 
+
+
 var currentString="";
 myPort.on('open', function(){
+
+	myPort.write("1", function(err) {
+	  if (err) {
+	    return console.log('Error on Starting ', err.message);
+	  }
+	  console.log('Data Collection Started');
+	});
 	// console.log('Serial Port Opened');
 	myPort.on('data', function(data){
 		// currentValue=data.toString('utf8');
