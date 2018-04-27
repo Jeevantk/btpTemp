@@ -78,7 +78,7 @@ myPort.on('open', function(){
 				currentString=currentString+currentValue;
 				currentString=currentString.replace("\n",'');
 				// console.log(parseFloat(currentString));
-				socket.emit('new tempurature', parseFloat(currentString));
+				//socket.emit('new tempurature', parseFloat(currentString));
 				console.log("New Tempurature Sent from Client Side",parseFloat(currentString));
 				connection.query('INSERT INTO tempurature (tempValue) VALUES (?)',parseFloat(currentString),function(err,result){
 					if(err) throw err;
