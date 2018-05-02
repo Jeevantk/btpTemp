@@ -34,13 +34,13 @@ router.post('/update',function(req,res){
       var xValue=parseInt(req.body.xValue)+parseInt(result[0].xValue);
       var yValue=parseInt(req.body.yValue)+parseInt(result[0].yValue);
       var zValue=parseInt(req.body.zValue)+parseInt(result[0].zValue);
-      
+
       var queryString="UPDATE `currentPosition` SET `xValue`="+xValue+", `yValue`="+(yValue)+", `zValue`="+(zValue)+" WHERE `id`=1;";
       connection.query(queryString,function(err,result){
         if(err) throw err;
         console.log("State Updated");
-        console.log("Trying to send data");
-        res.send(req.body);
+        var currentState={"xValue":xValue,"yValue":yValue,"zValue":zValue};
+        res.send(currentState);
       });
     });
 
