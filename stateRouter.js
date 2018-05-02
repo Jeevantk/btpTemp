@@ -29,14 +29,21 @@ router.get('/get', function(req, res, next) {
 
 router.post('/update',function(req,res){
 	var queryString="UPDATE `currentPosition` SET `xValue`="+req.body.xValue+", `yValue`="+req.body.yValue+", `zValue`="+req.body.zValue+" WHERE `id`=1;";
-	connection.query(queryString,function(err,result){
-		if(err) throw err;
-		console.log("State Updated");
-	});
-	console.log(req.body.xValue);
+	connection.query("SELECT * FROM currentPosition WHERE id = 1",function(err,result,fields){
+      if(err) throw err;
+      var xValue=parseInt(req.body.xValue)+parseInt(result[0].xValue);
+      var yValue=parseInt(req.body.yValue)+parseInt(result[0].yValue);
+      var zValue=parseInt(req.body.zValue)+parseInt(result[0].zValue);
+      
+      var queryString="UPDATE `currentPosition` SET `xValue`="+xValue+", `yValue`="+(yValue)+", `zValue`="+(zValue)+" WHERE `id`=1;";
+      connection.query(queryString,function(err,result){
+        if(err) throw err;
+        console.log("State Updated");
+        console.log("Trying to send data");
+        res.send(req.body);
+      });
+    });
 
 });
-
-
 
 module.exports = router
