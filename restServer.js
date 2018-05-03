@@ -23,17 +23,7 @@ app.use('/state', stateRouter);
 var router = express.Router();
 var restPort = process.env.PORT || 3330;
 
-var connection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "theeta",
-  database: "btp"
-});
 
-connection.connect((err)=>{
-  if(err) throw err;
-  console.log('Connected to MYSQL Database');
-});
 
 app.use(function(req, res, next) {
 	var err = new Error('Not Found');
