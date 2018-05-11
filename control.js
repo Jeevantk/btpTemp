@@ -3,6 +3,7 @@ var mysql = require('mysql');
 var socket = require('socket.io-client')('http://34.212.83.92:6001');
 
 // var socket = require('socket.io-client')('http://127.0.0.1:6001');
+var portName = '/dev/ttyACM0';
 
 var spawn = require("child_process").spawn;
 
