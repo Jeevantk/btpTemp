@@ -1,4 +1,4 @@
-var SerialPort = require("serialport");
+var SerialPort = require("serialport")
 var mysql = require('mysql');
 var socket = require('socket.io-client')('http://34.212.83.92:6001');
 
@@ -23,9 +23,15 @@ connection.connect((err)=>{
 
 var createTemp = "CREATE TABLE IF NOT EXISTS `tempurature`(`id` int(11) NOT NULL AUTO_INCREMENT,`tempValue` real  NOT NULL,PRIMARY KEY (`id`));";
 
-var myPort = new SerialPort('/dev/ttyACM1', {
-    parser: new SerialPort.parsers.Readline('\n')
-},false);
+serialPort = new SerialPort(portName, {
+    baudRate: 9600,
+    // defaults for Arduino serial communication
+     dataBits: 8,
+     parity: 'none',
+     stopBits: 1,
+     flowControl: false
+});
+
 
 
 socket.on('connect',function(){
@@ -52,45 +58,37 @@ socket.on('control',function(data) {
     // spawn('python',["control.py",data.xValue,data.yValue,data.zValue,data.feedRate]);
       // console.log(data.xValue);
 });
-var write=0;
 
-socket.on('startStop',function(data){
-	if(data==1)
-	{
-		write=1;
-	}
-	else if(data==0)
-	{
-		write=0;
-	}
-
+socket.on('experimentParams',function(data){
+	console.log("Experiment Params Recieved ",data);
+	serialPort.write(data);
 });
 
-var currentString="";
-myPort.on('open', function(){
-	// console.log('Serial Port Opened');
-	myPort.on('data', function(data){
-		// currentValue=data.toString('utf8');
-		if(write){
-			currentValue=data.toString();
-			// console.log(currentString);
-			if(currentValue.includes("\n")){
-				currentString=currentString+currentValue;
-				currentString=currentString.replace("\n",'');
-				// console.log(parseFloat(currentString));
-				//socket.emit('new tempurature', parseFloat(currentString));
-				console.log("New Tempurature Sent from Client Side",parseFloat(currentString));
-				connection.query('INSERT INTO tempurature (tempValue) VALUES (?)',parseFloat(currentString),function(err,result){
-					if(err) throw err;
-					console.log("Inserted tempurature into database ");
-				});
-				currentString="";
-			}
-			else{
-				currentString=currentString+currentValue;
-			}
-		}
+// var currentString="";
+// myPort.on('open', function(){
+// 	// console.log('Serial Port Opened');
+// 	myPort.on('data', function(data){
+// 		// currentValue=data.toString('utf8');
+// 		if(write){
+// 			currentValue=data.toString();
+// 			// console.log(currentString);
+// 			if(currentValue.includes("\n")){
+// 				currentString=currentString+currentValue;
+// 				currentString=currentString.replace("\n",'');
+// 				// console.log(parseFloat(currentString));
+// 				//socket.emit('new tempurature', parseFloat(currentString));
+// 				console.log("New Tempurature Sent from Client Side",parseFloat(currentString));
+// 				connection.query('INSERT INTO tempurature (tempValue) VALUES (?)',parseFloat(currentString),function(err,result){
+// 					if(err) throw err;
+// 					console.log("Inserted tempurature into database ");
+// 				});
+// 				currentString="";
+// 			}
+// 			else{
+// 				currentString=currentString+currentValue;
+// 			}
+// 		}
 
-	});
-});
+// 	});
+// });
 

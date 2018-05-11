@@ -27,7 +27,7 @@ io.on('connection', function (socket) {
 
   socket.on('collectData',function(data){
     console.log('Command Recieved for Collect Data ',data);
-    socket.broadcast.emit('startStop',data);
+    socket.broadcast.emit('experimentParams',data);
   });
 
 
