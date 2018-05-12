@@ -62,7 +62,7 @@ socket.on('control',function(data) {
 
 socket.on('experimentParams',function(data){
 	console.log("Experiment Params Recieved ",data);
-	serialPort.write(data);
+	serialPort.write(data.toString());
 });
 
 // var currentString="";
