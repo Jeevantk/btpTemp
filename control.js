@@ -3,7 +3,13 @@ var mysql = require('mysql');
 var socket = require('socket.io-client')('http://34.212.83.92:6001');
 
 // var socket = require('socket.io-client')('http://127.0.0.1:6001');
-var portName = '/dev/ttyACM0';
+
+var createTemp = "CREATE TABLE IF NOT EXISTS `tempurature`(`id` int(11) NOT NULL AUTO_INCREMENT,`tempValue` real  NOT NULL,PRIMARY KEY (`id`));";
+
+
+var portNameCurrent = '/dev/ttyACM0';
+
+var portTemp = '/dev/ttyUSB0';
 
 var spawn = require("child_process").spawn;
 
@@ -21,10 +27,20 @@ connection.connect((err)=>{
 	console.log('Connected to MYSQL Database');
 });
 
+var serialPortCurrent;
 
-var createTemp = "CREATE TABLE IF NOT EXISTS `tempurature`(`id` int(11) NOT NULL AUTO_INCREMENT,`tempValue` real  NOT NULL,PRIMARY KEY (`id`));";
+var serialPortTemp;
 
-serialPort = new SerialPort(portName, {
+serialPortCurrent = new SerialPort(portNameCurrent, {
+    baudRate: 9600,
+    // defaults for Arduino serial communication
+     dataBits: 8,
+     parity: 'none',
+     stopBits: 1,
+     flowControl: false
+});
+
+serialPortTemp = new SerialPort(portTemp, {
     baudRate: 9600,
     // defaults for Arduino serial communication
      dataBits: 8,
@@ -55,15 +71,41 @@ socket.on('control',function(data) {
     var zMotion=Math.min(data.zValue,30);
     var feedRate=Math.min(data.feedRate,300);
     spawn('python',["control.py",xMotion,yMotion,zMotion,feedRate]);
-
-    // spawn('python',["control.py",data.xValue,data.yValue,data.zValue,data.feedRate]);
-      // console.log(data.xValue);
 });
 
 socket.on('experimentParams',function(data){
 	console.log("Experiment Params Recieved ",data);
-	serialPort.write(data.toString());
+	serialPortCurrent.write(data.toString());
 });
+
+var currentTempString="";
+serialPortTemp.on('open',function(){
+  serialPortTemp.on('data',function(data){
+    var currentTempValue=data.toString();
+    if(currentTempValue.includes("\n")){
+      currentTempString=currentTempString+currentTempValue;
+      currentTempString=currentTempString.replace("\n",'');
+      socket.emit('new tempurature',parseFloat(currentTempString));
+      console.log("New Tempurature Send from local Machine ",currentTempString);
+      // Add Code For Adding the tempurature value into the database.
+      currentTempString="";
+    }
+    else{
+      currentTempString=currentTempString+currentTempValue;
+    }
+  });
+});
+
+
+
+var k=1;
+function sendCurrentValues(){
+  socket.emit("new Current",k);
+  k=k*2;
+}
+setInterval(sendCurrentValues,2000);
+
+
 
 // var currentString="";
 // myPort.on('open', function(){
