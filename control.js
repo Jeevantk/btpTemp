@@ -1,9 +1,13 @@
 var SerialPort = require("serialport")
 var mysql = require('mysql');
 var socket = require('socket.io-client')('http://34.212.83.92:6001');
+var fs = require('fs');
 
+// file is included here:
+eval(fs.readFileSync('statsmodels.js')+'');
 // var socket = require('socket.io-client')('http://127.0.0.1:6001');
 
+// console.log(" Array values ",arr.variance([2,3]))
 var createTemp = "CREATE TABLE IF NOT EXISTS `tempurature`(`id` int(11) NOT NULL AUTO_INCREMENT,`tempValue` real  NOT NULL,PRIMARY KEY (`id`));";
 
 
@@ -96,14 +100,39 @@ serialPortTemp.on('open',function(){
   });
 });
 
+var currentValues=[];
+var currentCurrentString="";
+serialPortCurrent.on('open',function(){
+  serialPortCurrent.on('data',function(data){
+    var currentCurrentValue=data.toString();
+    if(currentCurrentValue.includes("\n")){
+      currentCurrentString=currentCurrentString+currentCurrentValue;
+      currentCurrentString=currentCurrentString.replace("\n",'');
+      currentValues.push(parseFloat(currentCurrentString));
+      // console.log("New Tempurature Send from local Machine ",currentCurrentString);
+      // Add Code For Adding the tempurature value into the database.
+      currentCurrentString="";
+    }
+    else{
+      currentCurrentString=currentCurrentString+currentCurrentValue;
+    }
+    if(currentValues.length==1000)
+    {
+      var variance = arr.variance(currentValues);
+      socket.emit('new Current',variance);
+      console.log("New Tempurature Variance send from local Machine ",variance);
+      currentValues=[];
+    }
+  });
+});
 
 
-var k=1;
-function sendCurrentValues(){
-  socket.emit("new Current",k);
-  k=k*2;
-}
-setInterval(sendCurrentValues,2000);
+// var k=1;
+// function sendCurrentValues(){
+//   socket.emit("new Current",k);
+//   k=k*2;
+// }
+// setInterval(sendCurrentValues,2000);
 
 
 
