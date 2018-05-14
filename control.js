@@ -116,11 +116,12 @@ serialPortCurrent.on('open',function(){
     else{
       currentCurrentString=currentCurrentString+currentCurrentValue;
     }
-    if(currentValues.length==1000)
+    if(currentValues.length==250)
     {
       var variance = arr.variance(currentValues);
-      socket.emit('new Current',variance);
-      console.log("New Tempurature Variance send from local Machine ",variance);
+
+      socket.emit('new Current',{"variance":variance,"value":parseFloat(currentCurrentString)});
+      console.log("New Current Variance send from local Machine ",variance);
       currentValues=[];
     }
   });
