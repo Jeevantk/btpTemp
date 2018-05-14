@@ -1,6 +1,6 @@
 var SerialPort = require("serialport")
 var mysql = require('mysql');
-var socket = require('socket.io-client')('http://34.212.83.92:6001');
+var socket = require('socket.io-client')('http://54.190.43.20:6001');
 var fs = require('fs');
 
 // file is included here:
